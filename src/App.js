@@ -11,11 +11,13 @@ import VectorUp from "./icons/VectorUp.svg";
 import axios from "axios";
 import WindowPlot from "./component/WindowPlot";
 
+export const Context = React.createContext();
+
 function App() {
   const [customers, setCustomers] = useState([]);
   const [sortToken, setSortToken] = useState("desc");
   const [name, setName] = useState();
-  const [showPlot, setShowPlot] = useState(true);
+  const [showPlot, setShowPlot] = useState(false);
   const [userId, setUserId] = useState();
   const [dataForPlot, setDataForPlot] = useState();
   const [userEmailPlot, setUserEmailForPlot] = useState();
@@ -54,61 +56,69 @@ function App() {
         .get(`https://test.gefara.xyz/api/v1/user/${userId.id}/transactions`)
         .then((response) => setDataForPlot(response.data))
         .catch((error) => console.error("Error fetching data", error));
-    console.log(dataForPlot);
+    userId && setShowPlot(true);
   }, [userId]);
   return (
-    <div className="container">
-      <NavBar />
-      <div className="App">
-        <div className="mainOrg">Моя организация</div>
-        <div className="line"></div>
-        <div className="myUsers">Пользователи</div>
-        <div className="mySearchContainer">
-          <div className="mySearchContainerinside">
-            <img className="icoSearch" src={iconsearch}></img>
-            <input type="text" placeholder="поиск" onChange={Serching} />
+    <Context.Provider value={[showPlot, setShowPlot]}>
+      <div className="container">
+        <NavBar />
+        <div className="App">
+          <div className="mainOrg">Моя организация</div>
+          <div className="line"></div>
+          <div className="myUsers">Пользователи</div>
+          <div className="mySearchContainer">
+            <div className="mySearchContainerinside">
+              <img className="icoSearch" src={iconsearch}></img>
+              <input type="text" placeholder="поиск" onChange={Serching} />
+            </div>
           </div>
-        </div>
-        <table className="tablePanel">
-          <thead>
-            <tr className="firstLine">
-              <th>Email</th>
-              <th>Имя</th>
-              <th>Роль</th>
-              <th>Подписка</th>
-              <th onClick={handleSort}>
-                Токены
-                {sortToken === "asc" && <img src={Vector} />}
-                {sortToken === "desc" && <img src={VectorUp} />}
-              </th>
-              <th>Действия</th>
-            </tr>
-          </thead>
-          <tbody>
-            {customers.map((user) => (
-              <tr key={user.id}>
-                <td onClick={() => setUserId(user)}>{user.email}</td>
-                <td onClick={() => setUserId(user)}>{user.name}</td>
-                <td onClick={() => setUserId(user)}>{user.role}</td>
-                <td onClick={() => setUserId(user)}>
-                  {user.subscription.plan.type}
-                </td>
-                <td onClick={() => setUserId(user)}>
-                  {user.subscription.tokens}
-                </td>
-                <td>
-                  <img src={edit} />
-                  <img src={trash} />
-                </td>
+          <table className="tablePanel">
+            <thead>
+              <tr className="firstLine">
+                <th>Email</th>
+                <th>Имя</th>
+                <th>Роль</th>
+                <th>Подписка</th>
+                <th onClick={handleSort}>
+                  Токены
+                  {sortToken === "asc" && <img src={Vector} />}
+                  {sortToken === "desc" && <img src={VectorUp} />}
+                </th>
+                <th>Действия</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {customers.slice(0, 10).map((user) => (
+                <tr key={user.id}>
+                  <td className="line" onClick={() => setUserId(user)}>
+                    {user.email}
+                  </td>
+                  <td className="line" onClick={() => setUserId(user)}>
+                    {user.name}
+                  </td>
+                  <td className="line" onClick={() => setUserId(user)}>
+                    {user.role}
+                  </td>
+                  <td className="line" onClick={() => setUserId(user)}>
+                    {user.subscription.plan.type}
+                  </td>
+                  <td className="line" onClick={() => setUserId(user)}>
+                    {user.subscription.tokens}
+                  </td>
+                  <td className="line">
+                    <img src={edit} />
+                    <img src={trash} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {showPlot && userId && dataForPlot && (
+          <WindowPlot dataForPlot={dataForPlot} userEmail={userId.email} />
+        )}
       </div>
-      {userId && dataForPlot && (
-        <WindowPlot dataForPlot={dataForPlot} userEmail={userId.email} />
-      )}
-    </div>
+    </Context.Provider>
   );
 }
 

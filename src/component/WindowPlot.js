@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import line1 from "../icons/Line1.svg";
 import line2 from "../icons/Line2.svg";
 import square from "../icons/chart-legend-item.svg";
+import { Context } from "../App";
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -48,6 +50,7 @@ export const options = {
 };
 
 function WindowPlot({ dataForPlot, userEmail }) {
+  const [showPlot, setShowPlot] = useContext(Context);
   const data = {
     labels: dataForPlot.map((i) => moment(i.created_at).format("DD.MM.YY")),
     datasets: [
@@ -79,8 +82,8 @@ function WindowPlot({ dataForPlot, userEmail }) {
     <div className="contPlot">
       <div className="emailCloseSection">
         <div className="emailPlot">email</div>
-        <div>
-          <img src={line1} />
+        <div onClick={() => setShowPlot(false)}>
+          <img style={{ marginRight: "-18px" }} src={line1} />
           <img src={line2} />
         </div>
       </div>
@@ -105,14 +108,22 @@ function WindowPlot({ dataForPlot, userEmail }) {
         <tbody>
           {dataForPlot.slice(0, 7).map((info) => (
             <tr key={info.id}>
-              <td style={{ color: "white" }}>{info.type}</td>
+              <td className="line" style={{ color: "white" }}>
+                {info.type}
+              </td>
               {info.type === "REPLENISH" && (
-                <td style={{ color: "#1ABB34" }}>+ {info.amount} BTKN</td>
+                <td className="line" style={{ color: "#1ABB34" }}>
+                  + {info.amount} BTKN
+                </td>
               )}
               {info.type === "WRITE_OFF" && (
-                <td style={{ color: "#FE4242" }}>- {info.amount} BTKN</td>
+                <td className="line" style={{ color: "#FE4242" }}>
+                  - {info.amount} BTKN
+                </td>
               )}
-              <td style={{ color: "white" }}>{info.created_at}</td>
+              <td className="line" style={{ color: "white" }}>
+                {info.created_at}
+              </td>
             </tr>
           ))}
         </tbody>
