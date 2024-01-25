@@ -8,6 +8,10 @@ h3 {
 th {
   color: #9ca3af;
 }
+td:hover {
+  cursor: pointer;
+}
+
 .container {
   margin: 0 20px;
 }
@@ -118,7 +122,13 @@ th {
 .icoSearch {
   margin-right: 10px;
 }
-
+input {
+  border-radius: 6px;
+  background: transparent;
+  color: #fff;
+  border: 1px solid #313e62;
+  padding: 8px 12px;
+}
 .tablePanel {
   text-align: center;
   table-layout: fixed;
